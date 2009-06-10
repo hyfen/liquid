@@ -24,7 +24,15 @@ module Liquid
     end
   
     def render(context)      
-      source  = Liquid::Template.file_system.read_template_file(context[@template_name])      
+      
+      # make sure we read the partial in the theme's directory
+      if context['active_theme']
+        template_path = File.join(context['active_theme'], "views", context[@template_name])
+      else
+        template_path = context[@template_name]
+      end
+            
+      source  = Liquid::Template.file_system.read_template_file(template_path)
       partial = Liquid::Template.parse(source)      
       
       variable = context[@variable_name || @template_name[1..-2]]
